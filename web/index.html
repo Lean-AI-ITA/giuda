@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Giuda — Chi l'ha deciso!!!</title>
+<style>
+:root{
+  --bg:#0f0c0b;--bg2:#161210;--panel:#1b1614;--panel2:#231d1a;--line:#2f2724;--line2:#3d332f;
+  --txt:#f3ece5;--mut:#9d9087;--mut2:#6f645d;
+  --acc:#ff5a3c;--acc2:#ff8a5c;--gold:#f5c451;--ok:#3ecf8e;--warn:#f5a524;--bad:#ff4d4d;
+  --r:14px;--sh:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;font:14.5px/1.55 "Segoe UI Variable","Segoe UI",Inter,system-ui,sans-serif;color:var(--txt);
+  background:radial-gradient(1200px 500px at 15% -10%,rgba(255,90,60,.10),transparent 60%),
+             radial-gradient(900px 400px at 100% 0%,rgba(245,196,81,.06),transparent 60%),var(--bg);
+  background-attachment:fixed}
+a{color:inherit}
+svg.i{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+header{display:flex;align-items:center;gap:14px;padding:12px 26px;position:sticky;top:0;z-index:5;
+  background:rgba(15,12,11,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.brand .av{width:56px;height:56px}
+.brand h1{margin:0;font-size:21px;letter-spacing:.5px;font-weight:800}
+.brand .motto{color:var(--acc);font-weight:700;font-style:italic;font-size:13px}
+nav{display:flex;gap:4px;margin-left:28px;background:var(--panel);padding:4px;border-radius:12px;border:1px solid var(--line)}
+nav button{display:flex;align-items:center;gap:7px;background:none;border:0;color:var(--mut);padding:8px 14px;cursor:pointer;font:inherit;border-radius:9px;transition:.15s}
+nav button:hover{color:var(--txt)}
+nav button.on{background:var(--panel2);color:var(--txt);box-shadow:inset 0 0 0 1px var(--line2)}
+.status{margin-left:auto;display:flex;gap:10px;align-items:center}
+.pill{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:30px;background:var(--panel);border:1px solid var(--line);color:var(--mut);font-size:12.5px;white-space:nowrap}
+.led{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.led.busy{background:var(--warn);box-shadow:0 0 10px var(--warn);animation:pulse 1s infinite}
+.led.off{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+@keyframes pulse{50%{opacity:.35}}
+
+main{padding:22px 26px;max-width:1500px;margin:0 auto}
+.tab{display:none;animation:fade .25s}.tab.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}}
+
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin-bottom:16px;box-shadow:var(--sh)}
+.card h2{margin:0 0 4px;font-size:16px;display:flex;align-items:center;gap:8px}
+.card .sub{color:var(--mut);font-size:13px;margin-bottom:10px}
+label{display:block;font-size:12.5px;color:var(--mut);margin:12px 0 5px;font-weight:600;letter-spacing:.2px}
+input,select{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--line2);border-radius:10px;color:var(--txt);font:inherit;transition:.15s}
+input:focus,select:focus{outline:0;border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,90,60,.18)}
+input[type=checkbox]{width:auto;accent-color:var(--acc);margin-right:8px}
+.check{display:flex;align-items:center;color:var(--txt);font-weight:400;font-size:13.5px;cursor:pointer}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);color:var(--txt);border:1px solid var(--line2);padding:9px 15px;border-radius:10px;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--mut2);transform:translateY(-1px)}
+.btn.pri{background:linear-gradient(135deg,var(--acc),#e83f2a);border-color:transparent;color:#fff;box-shadow:0 6px 18px rgba(255,90,60,.3)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:wait;transform:none}
+.hint{font-size:12.5px;color:var(--mut);margin-top:8px}
+code{font-family:"Cascadia Code",Consolas,monospace;font-size:12.5px}
+
+/* ---------- selettore modelli ---------- */
+.picker{margin-top:14px;padding:14px;border:1px solid var(--line2);border-radius:12px;background:var(--bg)}
+.picker-top{display:flex;gap:10px;align-items:center}
+.picker-top input{flex:1}
+.picker-top .count{color:var(--mut);font-size:12.5px;white-space:nowrap}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chips button{background:var(--panel2);border:1px solid var(--line2);color:var(--mut);border-radius:20px;padding:3px 11px;font:inherit;font-size:12px;cursor:pointer}
+.chips button.on{border-color:var(--acc);color:var(--txt);background:rgba(255,90,60,.12)}
+#c-list{margin-top:10px;height:260px;padding:6px;font-family:"Cascadia Code",Consolas,monospace;font-size:12.5px}
+#c-list optgroup{color:var(--acc2);font-style:normal;font-family:"Segoe UI",system-ui,sans-serif;font-weight:700;font-size:12px}
+#c-list option{color:var(--txt);padding:4px 6px;border-radius:6px}
+#c-list option:checked{background:linear-gradient(90deg,rgba(255,90,60,.35),rgba(255,90,60,.15))}
+.picker-info{margin-top:8px;font-size:12.5px;color:var(--mut);min-height:18px}
+.picker-info b{color:var(--txt)}
+
+.personas{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.persona{position:relative;display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line2);border-radius:12px;cursor:pointer;background:var(--bg);transition:.15s;margin:0;color:var(--txt);font-weight:400}
+.persona:hover{border-color:var(--mut2)}
+.persona input{position:absolute;opacity:0}
+.persona .av{width:64px;height:64px}
+.persona b{display:block;font-size:14px}.persona span{font-size:12.5px;color:var(--mut)}
+.persona:has(input:checked){border-color:var(--acc);box-shadow:0 0 0 3px rgba(255,90,60,.15);background:linear-gradient(135deg,rgba(255,90,60,.08),transparent)}
+
+.stats{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13px;color:var(--mut)}
+.stat b{font-size:17px;color:var(--txt)}
+.stat .d{width:9px;height:9px;border-radius:50%}
+.stats select{width:auto;min-width:260px;margin-left:auto}
+.split{display:grid;grid-template-columns:370px 1fr;gap:18px}
+.list{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:auto;max-height:calc(100vh - 210px);box-shadow:var(--sh)}
+.item{position:relative;padding:13px 16px 13px 19px;border-bottom:1px solid var(--line);cursor:pointer;transition:.12s}
+.item::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--mut2)}
+.item.v-TI::before{background:var(--ok)}.item.v-DA::before{background:var(--warn)}.item.v-RI::before{background:var(--bad)}
+.item:hover{background:var(--panel2)}
+.item.sel{background:linear-gradient(90deg,rgba(255,90,60,.10),transparent)}
+.item .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:5px}
+.item .m{font-size:12px;color:var(--mut);margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.6px}
+.b-TI{background:rgba(62,207,142,.13);color:var(--ok)}.b-DA{background:rgba(245,165,36,.13);color:var(--warn)}
+.b-RI{background:rgba(255,77,77,.14);color:var(--bad)}.b-q{background:#2a2422;color:var(--mut)}
+.detail{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:auto;max-height:calc(100vh - 210px);box-shadow:var(--sh)}
+
+.hero{display:flex;gap:22px;align-items:center;padding:24px 26px;border-bottom:1px solid var(--line);
+  background:radial-gradient(500px 200px at 10% 50%,var(--glow,rgba(255,90,60,.12)),transparent 70%)}
+.hero .av{width:118px;height:118px}
+.hero.v-TI{--glow:rgba(62,207,142,.13)}.hero.v-DA{--glow:rgba(245,165,36,.12)}.hero.v-RI{--glow:rgba(255,77,77,.16)}
+.hero .meta{flex:1;min-width:0}
+.verdict{font-size:28px;font-weight:900;letter-spacing:1px;line-height:1.1}
+.v-TI .verdict{color:var(--ok)}.v-DA .verdict{color:var(--warn)}.v-RI .verdict{color:var(--bad)}
+.bubble{position:relative;margin-top:12px;background:var(--txt);color:#1b1513;padding:11px 15px;border-radius:14px;font-weight:600;font-size:14px;max-width:640px;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.bubble::before{content:"";position:absolute;left:-8px;top:16px;border:8px solid transparent;border-right-color:var(--txt);border-left:0}
+.bubble.typing::after{content:"▌";animation:pulse .7s infinite;margin-left:2px}
+.bubble b{color:#c8341f}
+.ctx{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12.5px;color:var(--mut);margin-top:6px}
+.ctx a{color:var(--acc2);text-decoration:none}
+.hero .acts{display:flex;flex-direction:column;gap:6px;align-self:flex-start}
+
+.md{padding:8px 26px 26px}
+.md h2{font-size:13px;text-transform:uppercase;letter-spacing:1.4px;color:var(--mut);margin:24px 0 10px;font-weight:800}
+.md h3{font-size:15px;margin:16px 0 6px}
+.md p{margin:8px 0}
+.md ul,.md ol{margin:6px 0;padding-left:20px}.md li{margin:4px 0}
+.md code{background:var(--bg);border:1px solid var(--line);padding:1px 6px;border-radius:6px}
+.md pre{background:#0a0807;border:1px solid var(--line);padding:13px 15px;border-radius:10px;overflow:auto;margin:10px 0}
+.md pre code{background:none;border:0;padding:0;color:#ffd7b8}
+.md blockquote{border-left:3px solid var(--warn);margin:10px 0;padding:6px 14px;color:var(--mut);background:rgba(245,165,36,.05);border-radius:0 8px 8px 0}
+.md hr{border:0;border-top:1px dashed var(--line2);margin:22px 0}
+.md i{color:var(--acc2)}
+.issue{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;padding:12px 16px;margin:12px 0;background:linear-gradient(90deg,var(--cbg),transparent 45%)}
+.issue.s-hi{--c:var(--bad);--cbg:rgba(255,77,77,.08)}.issue.s-md{--c:var(--warn);--cbg:rgba(245,165,36,.07)}.issue.s-lo{--c:#8b7fd6;--cbg:rgba(139,127,214,.07)}
+.issue-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.sev{display:inline-flex;align-items:center;gap:6px;color:var(--c);font-weight:800;font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:var(--cbg);border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+.sev svg{width:14px;height:14px}
+.issue-t{font-weight:700;font-size:14.5px}
+.tag{font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px}
+.tag.ok{background:rgba(62,207,142,.12);color:var(--ok)}.tag.wa{background:rgba(245,165,36,.12);color:var(--warn)}
+.outro{text-align:center;color:var(--acc2);font-style:italic;font-weight:600}
+
+.welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px 20px;min-height:460px;color:var(--mut)}
+.welcome .av{width:170px;height:170px}
+.welcome .bubble{margin-top:20px}
+.welcome .bubble::before{left:50%;top:-8px;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:var(--txt);border-top:0}
+.welcome h3{color:var(--txt);margin:22px 0 4px;font-size:17px}
+
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
+td,th{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--mut);font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.8px}
+tr:hover td{background:rgba(255,255,255,.015)}
+.err{color:var(--bad);font-size:12px;margin-top:3px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:3px 10px;border-radius:20px;background:var(--panel2);border:1px solid var(--line2)}
+.chip.on{color:var(--ok)}.chip.off{color:var(--mut)}
+
+.toast{position:fixed;bottom:22px;right:22px;display:none;align-items:center;gap:12px;background:var(--panel2);border:1px solid var(--line2);padding:10px 16px 10px 10px;border-radius:14px;max-width:440px;z-index:9;box-shadow:var(--sh);animation:fade .2s}
+.toast .av{width:42px;height:42px}
+.test-out{display:none;align-items:center;gap:16px;margin-top:14px;padding:14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.test-out .av{width:84px;height:84px}
+.test-out .bubble{margin-top:0;flex:1}
+footer{padding:16px 26px;color:var(--mut2);font-size:12px;display:flex;justify-content:space-between;align-items:center;max-width:1500px;margin:0 auto}
+@media(max-width:900px){.split{grid-template-columns:1fr}nav{margin-left:0}.status .pill:not(:first-child){display:none}.personas{grid-template-columns:1fr}}
+
+/* =====================================================
+   AVATAR "DOT" ANIMATO — sempre incazzato, sorride solo se assolve
+   ===================================================== */
+.av{display:block;overflow:visible}
+.av *{transform-box:fill-box;transform-origin:center}
+.av .bob{animation:fume 3s ease-in-out infinite;transform-box:view-box;transform-origin:60px 70px}
+@keyframes fume{0%,100%{transform:translateY(0)}45%{transform:translateY(-2px) scale(1.01,.99)}50%{transform:translate(.8px,-2px)}55%{transform:translate(-.8px,-2px)}}
+.av .shadow{animation:shad 3s ease-in-out infinite}
+@keyframes shad{50%{transform:scaleX(.9);opacity:.3}}
+.av .halo{animation:flick 3.4s steps(1) infinite;transition:stroke .4s}
+@keyframes flick{0%,40%,44%,100%{opacity:1}41%,43%{opacity:.25}}
+.av .eyes{animation:blink 6s infinite}
+@keyframes blink{0%,95%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+.av .pupils{animation:glare 7s ease-in-out infinite;transition:transform .3s}
+@keyframes glare{0%,35%{transform:translate(0,1px)}40%,60%{transform:translate(3px,1.5px)}65%,85%{transform:translate(-3px,1.5px)}90%,100%{transform:translate(0,1px)}}
+.av .brow{transition:transform .35s}
+.av .brow-l{transform:translate(1px,3px) rotate(17deg)}
+.av .brow-r{transform:translate(-1px,3px) rotate(-17deg)}
+.av .lid{transition:opacity .25s}
+.av .vein{animation:vein 1.6s ease-in-out infinite;transition:opacity .25s}
+@keyframes vein{50%{transform:scale(1.25)}}
+.av .mouth,.av .happy,.av .bang,.av .think,.av .zz,.av .steam,.av .sparkle{opacity:0;transition:opacity .25s}
+.av .m-frown{opacity:1}
+.av .cheek{opacity:.5;transition:opacity .4s}
+.av.talk .m-frown{opacity:0}.av.talk .m-talk{opacity:1;animation:talk .24s infinite alternate}
+@keyframes talk{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
+.av.thinking .m-frown{opacity:0}.av.thinking .m-grit{opacity:1}
+.av.thinking .pupils{animation:scan 1.3s ease-in-out infinite}
+@keyframes scan{0%,100%{transform:translate(-3.5px,2px)}50%{transform:translate(3.5px,2px)}}
+.av.thinking .brow-l{transform:translate(1px,4px) rotate(21deg)}.av.thinking .brow-r{transform:translate(-1px,4px) rotate(-21deg)}
+.av.thinking .think{opacity:1}
+.av .think circle{animation:dot 1.2s infinite}
+.av .think circle:nth-child(2){animation-delay:.2s}.av .think circle:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.av.rivedere .pupils{animation:none;transform:translate(5px,2px)}
+.av.rivedere .brow-l{transform:translate(1px,5px) rotate(24deg)}.av.rivedere .brow-r{transform:translate(-1px,-1px) rotate(-8deg)}
+.av.rivedere .m-frown{opacity:0}.av.rivedere .m-grit{opacity:1}
+.av.rivedere .vein{animation-duration:.8s}
+.av.rivedere .bob{animation:tilt 2.6s ease-in-out infinite}
+@keyframes tilt{50%{transform:rotate(-5deg)}}
+.av.rifallo .brow-l{transform:translate(2px,6px) rotate(28deg)}.av.rifallo .brow-r{transform:translate(-2px,6px) rotate(-28deg)}
+.av.rifallo .pupils{animation:none;transform:translateY(2px) scale(.7)}
+.av.rifallo .m-frown{opacity:0}.av.rifallo .m-shout{opacity:1;animation:talk .16s infinite alternate}
+.av.rifallo .bang{opacity:1;animation:bang .45s infinite alternate}
+.av.rifallo .steam{opacity:1}
+.av.rifallo .steam circle{animation:steam 1.1s ease-out infinite}
+.av.rifallo .steam circle:nth-child(2n){animation-delay:.35s}.av.rifallo .steam circle:nth-child(3n){animation-delay:.7s}
+@keyframes steam{0%{transform:translateY(4px) scale(.4);opacity:0}30%{opacity:.9}100%{transform:translateY(-14px) scale(1.3);opacity:0}}
+.av.rifallo .bob{animation:shake .3s linear infinite}
+.av.rifallo .halo{stroke:#ff2a2a;animation:flick .4s steps(1) infinite}
+.av.rifallo .vein{animation-duration:.4s}
+.av.rifallo .cheek{opacity:1}
+.av.rifallo .body{filter:drop-shadow(0 0 8px rgba(255,50,30,.8))}
+@keyframes shake{0%,100%{transform:translate(0,0)}25%{transform:translate(-1.8px,.6px) rotate(-1.6deg)}75%{transform:translate(1.8px,-.6px) rotate(1.6deg)}}
+@keyframes bang{to{transform:translateY(-3px) rotate(8deg)}}
+.av.assolvo .eyes,.av.assolvo .vein{opacity:0}.av.assolvo .happy{opacity:1}
+.av.assolvo .m-frown{opacity:0}.av.assolvo .m-smile{opacity:1}
+.av.assolvo .brow-l{transform:translateY(-5px) rotate(-6deg)}.av.assolvo .brow-r{transform:translateY(-5px) rotate(6deg)}
+.av.assolvo .halo{stroke:var(--gold);animation:glow 2s ease-in-out infinite;filter:drop-shadow(0 0 6px var(--gold))}
+@keyframes glow{50%{transform:translateY(-2px);opacity:.8}}
+.av.assolvo .sparkle{opacity:1}
+.av.assolvo .sparkle path{animation:spark 1.4s ease-in-out infinite}.av.assolvo .sparkle path:nth-child(2){animation-delay:.5s}
+@keyframes spark{0%,100%{transform:scale(.4);opacity:.3}50%{transform:scale(1.1);opacity:1}}
+.av.assolvo .bob{animation:hop 1.5s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0)}20%{transform:translateY(-6px) scale(.97,1.03)}40%{transform:translateY(0) scale(1.03,.97)}}
+.av.off .eyes,.av.off .vein{opacity:0}.av.off .zz{opacity:1}.av.off .halo{stroke:#555;animation:none}
+.av.off .bob{animation:sleep 5s ease-in-out infinite}
+@keyframes sleep{50%{transform:translateY(2px)}}
+.av .zz text{animation:zz 2s infinite}
+@keyframes zz{0%{opacity:0;transform:translate(0,0)}50%{opacity:1}100%{opacity:0;transform:translate(6px,-8px)}}
+@media (prefers-reduced-motion:reduce){.av *{animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand" id="brand" title="Clicca e Giuda dice la sua">
+    <span class="avslot" data-mood="idle"></span>
+    <div><h1>GIUDA</h1><div class="motto">Chi l'ha deciso!!!</div></div>
+  </div>
+  <nav>
+    <button data-t="rev" class="on"><svg class="i"><use href="#ic-list"/></svg>Recensioni</button>
+    <button data-t="repo"><svg class="i"><use href="#ic-repo"/></svg>Repository</button>
+    <button data-t="cfg"><svg class="i"><use href="#ic-gear"/></svg>Impostazioni</button>
+  </nav>
+  <div class="status">
+    <span class="pill" id="st-work"><span class="led"></span>In attesa</span>
+    <span class="pill" id="st-queue" style="display:none"></span>
+    <span class="pill" id="st-rate" style="display:none"></span>
+  </div>
+</header>
+
+<main>
+  <section id="rev" class="tab on">
+    <div class="stats">
+      <div class="stat"><span class="d" style="background:var(--ok)"></span>Assolti <b id="s-ti">0</b></div>
+      <div class="stat"><span class="d" style="background:var(--warn)"></span>Da rivedere <b id="s-da">0</b></div>
+      <div class="stat"><span class="d" style="background:var(--bad)"></span>Rifalli <b id="s-ri">0</b></div>
+      <select id="flt"><option value="">Tutti i repository</option></select>
+    </div>
+    <div class="split">
+      <div class="list" id="list"></div>
+      <div class="detail" id="detail"></div>
+    </div>
+  </section>
+
+  <section id="repo" class="tab">
+    <div class="card">
+      <h2><svg class="i"><use href="#ic-eye"/></svg>Aggiungi un repository da sorvegliare</h2>
+      <div class="sub">Giuda controlla GitHub a intervalli regolari e giudica ogni nuovo commit.</div>
+      <div class="row" style="grid-template-columns:3fr 1fr">
+        <div><label>Indirizzo GitHub</label><input id="r-url" placeholder="https://github.com/Lean-AI-ITA/giuda"></div>
+        <div><label>Branch (vuoto = principale)</label><input id="r-branch" placeholder="main"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="r-now" checked>Valuta subito l'ultimo commit</label>
+      <div style="margin-top:14px"><button class="btn pri" id="r-add"><svg class="i"><use href="#ic-eye"/></svg>Sorveglia</button></div>
+      <div class="hint">Repository privati: serve un token GitHub in Impostazioni (permesso <b>Contents: Read</b>).</div>
+      <div class="hint" id="no-token" style="display:none;color:var(--warn)">Stai usando Giuda senza token GitHub: hai solo 60 richieste l'ora. Aggiungilo in <b>Impostazioni → GitHub</b>.</div>
+    </div>
+    <div class="card">
+      <h2><svg class="i"><use href="#ic-repo"/></svg>Repository sorvegliati</h2>
+      <table><thead><tr><th>Repository</th><th>Branch</th><th>Ultimo controllo</th><th>Recensioni</th><th>Stato</th><th></th></tr></thead>
+      <tbody id="r-list"></tbody></table>
+    </div>
+  </section>
+
+  <section id="cfg" class="tab">
+    <div class="card">
+      <h2><svg class="i"><use href="#ic-brain"/></svg>Il cervello di Giuda</h2>
+      <div class="sub">Modello locale (il codice non esce dal PC) oppure servizio via API.</div>
+      <div class="row">
+        <div><label>Fornitore</label>
+          <select id="c-preset">
+            <option value="lmstudio">LM Studio (locale)</option>
+            <option value="ollama">Ollama (locale)</option>
+            <option value="openai">OpenAI (API)</option>
+            <option value="anthropic">Anthropic Claude (API)</option>
+            <option value="openrouter">OpenRouter (API)</option>
+            <option value="mistral">Mistral (API)</option>
+            <option value="custom">Personalizzato (compatibile OpenAI)</option>
+          </select></div>
+        <div><label>Indirizzo API</label><input id="c-url"></div>
+      </div>
+      <div class="row">
+        <div><label>Chiave API (vuota per modelli locali)</label><input id="c-key" type="password" autocomplete="off"></div>
+        <div><label>Modello</label>
+          <div style="display:flex;gap:6px"><input id="c-model" autocomplete="off" placeholder="es. qwen2.5-coder-14b-instruct oppure anthropic/claude-sonnet-4"><button class="btn" id="c-load"><svg class="i"><use href="#ic-down"/></svg>Carica modelli</button></div>
+        </div>
+      </div>
+
+      <div class="picker" id="c-picker" style="display:none">
+        <div class="picker-top">
+          <input id="c-find" placeholder="Cerca: claude, qwen, coder, deepseek…" autocomplete="off">
+          <span class="count" id="c-count"></span>
+        </div>
+        <div class="chips" id="c-chips"></div>
+        <select id="c-list" size="12"></select>
+        <div class="picker-info" id="c-info">Clicca un modello per sceglierlo. Il nome completo (es. <code>anthropic/claude-…</code>) è quello giusto: non toglierne il prefisso.</div>
+      </div>
+
+      <div class="row">
+        <div><label>Creatività (temperature)</label><input id="c-temp" type="number" step="0.1" min="0" max="1.5"></div>
+        <div><label>Lunghezza massima risposta (token, 0 = automatica)</label><input id="c-maxtok" type="number" min="0"></div>
+        <div><label>Lunghezza massima diff (caratteri)</label><input id="c-maxdiff" type="number" min="5000" step="5000"></div>
+        <div><label>Ragionamento (solo OpenRouter)</label>
+          <select id="c-reason"><option value="low">Basso (consigliato)</option><option value="medium">Medio</option><option value="high">Alto (lento e costoso)</option><option value="off">Non inviare</option></select></div>
+      </div>
+      <div class="hint">Con i modelli che "ragionano" metti <b>Lunghezza massima risposta</b> a 0: altrimenti possono finire i token pensando e restituire una recensione vuota.</div>
+      <div style="margin-top:16px"><button class="btn" id="c-test"><svg class="i"><use href="#ic-mic"/></svg>Prova Giuda</button></div>
+      <div class="test-out" id="c-reply"><span class="avslot" data-mood="talk"></span><div class="bubble" id="c-reply-txt"></div></div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="i"><use href="#ic-mask"/></svg>Personalità</h2>
+      <div class="personas">
+        <label class="persona"><input type="radio" name="persona" value="comico"><span class="avslot" data-mood="rifallo"></span>
+          <div><b>Giuda comico</b><span>Il boss di fine livello: ti fa ridere, ti irrita, ti manda a quel paese. Sorride solo se lo batti.</span></div></label>
+        <label class="persona"><input type="radio" name="persona" value="istituzionale"><span class="avslot" data-mood="idle"></span>
+          <div><b>Giuda istituzionale</b><span>Stessa severità e presunzione di colpa, nessuna battuta. Per recensioni da condividere.</span></div></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><svg class="i"><use href="#ic-git"/></svg>GitHub</h2>
+      <div class="row">
+        <div><label>Token GitHub (obbligatorio per repo privati)</label><input id="c-gh" type="password" autocomplete="off"></div>
+        <div><label>Controlla ogni (secondi, minimo 30)</label><input id="c-poll" type="number" min="30"></div>
+        <div><label>Massimo commit per controllo</label><input id="c-maxc" type="number" min="1" max="30"></div>
+      </div>
+      <label class="check" style="margin-top:14px"><input type="checkbox" id="c-merge">Salta i commit di merge</label>
+      <label class="check"><input type="checkbox" id="c-post">Pubblica la recensione come commento sul commit (token con permesso di scrittura)</label>
+      <div class="hint">Senza token: 60 richieste/ora. Con token: 5.000. Le chiavi restano solo in <code>data/config.json</code> su questo PC.</div>
+    </div>
+    <button class="btn pri" id="c-save"><svg class="i"><use href="#ic-save"/></svg>Salva impostazioni</button>
+  </section>
+</main>
+<footer>
+  <span id="f-info"></span>
+  <button class="btn sm ghost" id="off"><svg class="i"><use href="#ic-power"/></svg>Spegni Giuda</button>
+</footer>
+<div class="toast" id="toast"><span class="avslot" data-mood="talk"></span><span id="toast-t"></span></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="ic-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+  <symbol id="ic-repo" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8M12 13v8"/></symbol>
+  <symbol id="ic-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="ic-brain" viewBox="0 0 24 24"><path d="M9 3a3 3 0 00-3 3 3 3 0 00-2 5 3 3 0 001 5 3 3 0 005 2V4a1 1 0 00-1-1zM15 3a3 3 0 013 3 3 3 0 012 5 3 3 0 01-1 5 3 3 0 01-5 2V4a1 1 0 011-1z"/></symbol>
+  <symbol id="ic-mask" viewBox="0 0 24 24"><path d="M3 5c3 1 6 1 9 0s6-1 9 0v5c0 6-4 10-9 10S3 16 3 10z"/><path d="M8 10h1M15 10h1M9 15c2 1.5 4 1.5 6 0"/></symbol>
+  <symbol id="ic-git" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="9" r="2.5"/><path d="M6 8.5v7M18 11.5c0 3-3 3.5-9.5 5"/></symbol>
+  <symbol id="ic-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v4"/></symbol>
+  <symbol id="ic-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+  <symbol id="ic-power" viewBox="0 0 24 24"><path d="M18.4 6.6a9 9 0 11-12.8 0M12 2v10"/></symbol>
+  <symbol id="ic-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
+  <symbol id="ic-redo" viewBox="0 0 24 24"><path d="M21 2v6h-6"/><path d="M21 13a9 9 0 11-3-7.7L21 8"/></symbol>
+  <symbol id="ic-down" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="ic-ext" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></symbol>
+  <symbol id="ic-flame" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 01-12 0c0-3 2-5 2-5 0 2 1 3 2 3 0-4 2-7 2-10z"/></symbol>
+  <symbol id="ic-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0zM12 9v4M12 17h.01"/></symbol>
+  <symbol id="ic-meh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 15h8M8 9.5c.5-.7 1.5-.7 2 0M14 9.5c.5-.7 1.5-.7 2 0"/></symbol>
+</svg>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let S=null, sel=null, lastOk=null, presets={};
+const QUIPS=["Chi l'ha deciso!!!","Smettila di fare l'opinionista, nooooooo","Copy & paste ancora?!","Test? Dove? Ah, giusto… li facciamo domani!","Hai fatto il push? Male.","Convincimi. Se ci riesci.","Sono il boss di fine livello. Tu sei il livello 1.","Game over. Torna quando sai giocare.","Se funziona non significa che sia giusto.","Meeeeeh…"];
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ---------------- AVATAR ---------------- */
+let avN=0;
+function avatar(mood='idle'){
+  const id='g'+(avN++);
+  return `<svg class="av ${mood}" viewBox="0 0 120 130" aria-hidden="true">
+  <defs>
+    <radialGradient id="${id}b" cx="38%" cy="30%" r="75%"><stop offset="0" stop-color="#4f3a33"/><stop offset=".55" stop-color="#2b1e1a"/><stop offset="1" stop-color="#150e0c"/></radialGradient>
+    <radialGradient id="${id}c" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff4a2a" stop-opacity=".75"/><stop offset="1" stop-color="#ff4a2a" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse class="shadow" cx="60" cy="123" rx="30" ry="4.5" fill="#000" opacity=".45"/>
+  <g class="steam" fill="#d9d0c9"><circle cx="13" cy="58" r="5"/><circle cx="7" cy="48" r="4"/><circle cx="12" cy="40" r="3"/><circle cx="107" cy="58" r="5"/><circle cx="113" cy="48" r="4"/><circle cx="108" cy="40" r="3"/></g>
+  <g class="bob">
+    <ellipse class="halo" cx="60" cy="13" rx="25" ry="6" fill="none" stroke="#ff4b33" stroke-width="3.2" style="filter:drop-shadow(0 0 4px #ff4b33)"/>
+    <g class="body">
+      <circle cx="60" cy="72" r="46" fill="url(#${id}b)" stroke="#ff5a3c" stroke-width="2.2"/>
+      <g fill="#120c0a">
+        <circle cx="36" cy="36" r="10"/><circle cx="48" cy="29" r="11"/><circle cx="62" cy="27" r="11.5"/><circle cx="76" cy="30" r="10.5"/><circle cx="86" cy="39" r="9"/>
+        <circle cx="29" cy="47" r="7"/><circle cx="91" cy="50" r="6.5"/>
+      </g>
+      <g fill="none" stroke="#2e211d" stroke-width="2"><path d="M42 30q4-5 9-1"/><path d="M58 24q5-4 9 0"/><path d="M73 28q4-3 8 1"/></g>
+      <circle class="cheek" cx="33" cy="85" r="9" fill="url(#${id}c)"/><circle class="cheek" cx="87" cy="85" r="9" fill="url(#${id}c)"/>
+      <path d="M34 90 Q36 116 60 118 Q84 116 86 90 Q78 104 60 104 Q42 104 34 90Z" fill="#120c0a" opacity=".93"/>
+      <path d="M57 57 L58.5 63 M63 57 L61.5 63" stroke="#150e0c" stroke-width="1.6" stroke-linecap="round"/>
+    </g>
+    <g class="vein" stroke="#ff2a1a" stroke-width="2.6" fill="none" stroke-linecap="round">
+      <path d="M85 33q3.5 3 7 0"/><path d="M85 44q3.5-3 7 0"/><path d="M83 35q3 3.5 0 7"/><path d="M94 35q-3 3.5 0 7"/>
+    </g>
+    <g class="eyes">
+      <ellipse cx="43" cy="68" rx="10" ry="10.5" fill="#fbf6f1"/><ellipse cx="77" cy="68" rx="10" ry="10.5" fill="#fbf6f1"/>
+      <g class="pupils" fill="#120c0a">
+        <circle cx="44" cy="70" r="4.6"/><circle cx="76" cy="70" r="4.6"/>
+        <circle cx="45.6" cy="68.6" r="1.4" fill="#fff"/><circle cx="77.6" cy="68.6" r="1.4" fill="#fff"/>
+      </g>
+      <path class="lid" d="M31 55 L56 55 L55 66 Q44 60 31 58Z" fill="#2b1e1a"/>
+      <path class="lid" d="M64 55 L89 55 L89 58 Q76 60 65 66Z" fill="#2b1e1a"/>
+    </g>
+    <g class="happy" fill="none" stroke="#fbf6f1" stroke-width="4.5" stroke-linecap="round">
+      <path d="M35 71 Q43 61 51 71"/><path d="M69 71 Q77 61 85 71"/>
+    </g>
+    <path class="brow brow-l" d="M31 54 Q42 49 54 53" stroke="#0a0706" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path class="brow brow-r" d="M66 53 Q78 49 89 54" stroke="#0a0706" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <path class="mouth m-frown" d="M48 97 Q60 87 72 97" stroke="#fbf6f1" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+    <g class="mouth m-grit"><rect x="47" y="89" width="26" height="9" rx="3" fill="#fbf6f1"/><path d="M53.5 89v9M60 89v9M66.5 89v9M47 93.5h26" stroke="#2b1e1a" stroke-width="1.4"/></g>
+    <path class="mouth m-smile" d="M46 88 Q60 104 74 88 Q60 95 46 88Z" fill="#fbf6f1" stroke="#fbf6f1" stroke-width="2.5" stroke-linejoin="round"/>
+    <path class="mouth m-talk" d="M50 90 Q60 86 70 90 Q68 100 60 100 Q52 100 50 90Z" fill="#5c1a12" stroke="#fbf6f1" stroke-width="2.4"/>
+    <path class="mouth m-shout" d="M46 88 Q60 82 74 88 Q72 106 60 106 Q48 106 46 88Z" fill="#5c1a12" stroke="#fbf6f1" stroke-width="2.6"/>
+    <g class="bang" fill="#ff3b2f" font-weight="900" font-family="Arial Black,Arial" font-size="21"><text x="99" y="30" transform="rotate(14 99 30)">!!!</text></g>
+    <g class="think" fill="#fbf6f1"><circle cx="99" cy="24" r="3.4"/><circle cx="108" cy="24" r="3.4"/><circle cx="117" cy="24" r="3.4"/></g>
+    <g class="sparkle" fill="#f5c451"><path d="M100 30l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/><path d="M16 36l1.5 3.5 3.5 1.5-3.5 1.5-1.5 3.5-1.5-3.5-3.5-1.5 3.5-1.5z"/></g>
+    <g class="zz" fill="#9d9087" font-weight="800" font-family="Arial" font-size="14"><text x="92" y="36">z</text><text x="102" y="26" style="animation-delay:.6s">Z</text></g>
+    <g class="zz" stroke="#fbf6f1" stroke-width="3.5" stroke-linecap="round"><path d="M35 69h16M69 69h16"/></g>
+  </g></svg>`;
+}
+function hydrate(root=document){root.querySelectorAll('.avslot').forEach(s=>{s.outerHTML=avatar(s.dataset.mood||'idle');});}
+function setMood(svg,m){if(svg)svg.setAttribute('class','av '+m);}
+const moodOf=v=>({'TI ASSOLVO':'assolvo','DA RIVEDERE':'rivedere','RIFALLO':'rifallo'}[v]||'idle');
+
+/* ---------------- utility ---------------- */
+const api=async(p,b)=>{const r=await fetch(p,b===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+  const j=await r.json().catch(()=>({error:'Risposta non valida'})); if(!r.ok) throw new Error(j.error||r.status); return j;};
+const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m,ms=3800,mood='talk'){const t=$('#toast');$('#toast-t').textContent=m;setMood(t.querySelector('.av'),mood);t.style.display='flex';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',ms);}
+function typeInto(el,text,speed=18){
+  clearInterval(el._t);el.classList.add('typing');el.textContent='';let i=0;
+  const av=el.closest('.hero,.welcome,.test-out')?.querySelector('.av');const prev=av?.getAttribute('class');
+  if(av&&!/rifallo|assolvo/.test(prev))setMood(av,'talk');
+  el._t=setInterval(()=>{el.textContent=text.slice(0,++i);if(i>=text.length){clearInterval(el._t);el.classList.remove('typing');
+    if(av&&prev)av.setAttribute('class',prev);el.innerHTML=inl(text);}},speed);
+}
+
+/* ---------------- markdown ---------------- */
+const SEV={hi:['ic-flame'],md:['ic-alert'],lo:['ic-meh']};
+function sevOf(w){w=w.toLowerCase();return /tradimento|bloccante/.test(w)?'hi':/sospetto|importante/.test(w)?'md':'lo';}
+function inl(s){const c=[];let x=esc(s).replace(/`([^`]+)`/g,(_,m)=>{c.push(m);return `\u0001${c.length-1}\u0001`;});
+  x=x.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g,'$1<i>$2</i>').replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g,'$1<i>$2</i>')
+   .replace(/\[(evidente dal diff)\]/gi,'<span class="tag ok">$1</span>').replace(/\[(da verificare)\]/gi,'<span class="tag wa">$1</span>');
+  return x.replace(/\u0001(\d+)\u0001/g,(_,i)=>`<code>${c[+i]}</code>`);}
+function md(src){
+  const blocks=[]; src=(src||'').replace(/```[^\n]*\n([\s\S]*?)```/g,(_,c)=>{blocks.push(c);return `\u0000${blocks.length-1}\u0000`;});
+  let out=[],list=null,issue=false;
+  const cl=()=>{if(list){out.push(`</${list}>`);list=null;}}, ci=()=>{cl();if(issue){out.push('</div>');issue=false;}};
+  for(const line of src.split('\n')){
+    let m;
+    if(m=line.match(/^\u0000(\d+)\u0000$/)){cl();out.push(`<pre><code>${esc(blocks[+m[1]])}</code></pre>`);}
+    else if(m=line.match(/^###\s+(.*)/)){
+      ci(); const sv=m[1].match(/^(?:🔥|⚠️|⚠|🙄)?\s*(Tradimento|Sospetto|Ma dai|Bloccante|Importante|Minore)\b[\s:—-]*(.*)$/i);
+      if(sv){const k=sevOf(sv[1]);out.push(`<div class="issue s-${k}"><div class="issue-h"><span class="sev"><svg class="i"><use href="#${SEV[k][0]}"/></svg>${esc(sv[1])}</span><span class="issue-t">${inl(sv[2])}</span></div>`);issue=true;}
+      else out.push(`<h3>${inl(m[1])}</h3>`);}
+    else if(m=line.match(/^#{1,2}\s+(.*)/)){ci();out.push(`<h2>${inl(m[1])}</h2>`);}
+    else if(m=line.match(/^\s*[-*]\s+(.*)/)){if(list!=='ul'){cl();out.push('<ul>');list='ul';}out.push(`<li>${inl(m[1])}</li>`);}
+    else if(m=line.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=='ol'){cl();out.push('<ol>');list='ol';}out.push(`<li>${inl(m[1])}</li>`);}
+    else if(m=line.match(/^>\s?(.*)/)){cl();out.push(`<blockquote>${inl(m[1])}</blockquote>`);}
+    else if(/^---+$/.test(line.trim())){ci();out.push('<hr>');}
+    else if(line.trim()===''){cl();}
+    else{cl();out.push(`<p>${inl(line)}</p>`);}
+  }
+  ci(); return out.join('\n').replace(/<hr>\n<p><i>([^<]+)<\/i><\/p>\s*$/,'<hr><p class="outro">$1</p>');
+}
+function splitReview(c){
+  const L=(c||'').split('\n'); const vi=L.findIndex(l=>/^#{1,3}\s*Verdetto/i.test(l));
+  if(vi<0)return{intro:'',body:(c&&c.trim())?c:'_Risposta vuota dal modello._'};
+  let j=vi+1,intro=[];while(j<L.length&&!/^#/.test(L[j])){if(L[j].trim())intro.push(L[j].trim());j++;}
+  return{intro:intro.join(' '),body:L.slice(j).join('\n')};
+}
+const badge=r=>{
+  if(r.status==='in_coda')return '<span class="badge b-q">IN CODA</span>';
+  if(r.status==='in_corso')return '<span class="badge b-q">GIUDA STA LEGGENDO…</span>';
+  if(r.status==='errore')return '<span class="badge b-RI">ERRORE</span>';
+  const v=r.verdict||'?';return v==='?'?'<span class="badge b-q">SENZA VERDETTO</span>':`<span class="badge b-${v.slice(0,2)}">${esc(v)}</span>`;};
+
+/* ---------------- tabs ---------------- */
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.classList.remove('on'));$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.t).classList.add('on');});
+
+/* ---------------- stato ---------------- */
+async function refresh(){
+  const hav=$('#brand .av');
+  try{ S=await api('/api/state'); }catch(e){ $('#st-work').innerHTML='<span class="led off"></span>Giuda non risponde'; setMood(hav,'off'); return; }
+  const w=S.status.working_on;
+  $('#st-work').innerHTML=w?`<span class="led busy"></span>Sta giudicando ${esc(w)}`:'<span class="led"></span>In attesa';
+  if(!hav.classList.contains('talk')) setMood(hav,w?'thinking':'idle');
+  const q=$('#st-queue'); q.style.display=S.queue?'flex':'none'; q.textContent=`In coda: ${S.queue}`;
+  const r=$('#st-rate'); r.style.display=S.status.rate_remaining!=null?'flex':'none';
+  const low=S.status.rate_remaining!=null&&+S.status.rate_remaining<20;
+  r.textContent=S.rate_limited?`GitHub in pausa fino alle ${S.status.rate_reset}`:`GitHub ${S.status.rate_remaining}`+(!S.config.github_token_set?' · senza token':'');
+  r.style.color=(low||S.rate_limited)?'var(--warn)':''; r.title=S.config.github_token_set?'Richieste GitHub rimaste':'Senza token GitHub: 60 richieste/ora. Aggiungi il token in Impostazioni per averne 5.000.';
+  $('#f-info').textContent=`Giuda v${S.version} · recensioni in ${S.reviews_dir}`;
+  presets=S.presets;
+  renderRepos(); await renderReviews();
+  if(lastOk!==null && S.last_ok_id && S.last_ok_id>lastOk){
+    toast('Nuovo verdetto emesso!',4500,'rifallo');
+    if(window.Notification&&Notification.permission==='granted') new Notification('Giuda',{body:"Nuova recensione: chi l'ha deciso!!!"});
+  }
+  lastOk=S.last_ok_id||0;
+}
+function renderRepos(){
+  $('#no-token').style.display=S.config.github_token_set?'none':'block';
+  const f=$('#flt'), cur=f.value;
+  f.innerHTML='<option value="">Tutti i repository</option>'+S.repos.map(r=>`<option value="${r.id}">${esc(r.owner)}/${esc(r.name)} (${esc(r.branch)})</option>`).join('');
+  f.value=cur;
+  $('#r-list').innerHTML=S.repos.length?S.repos.map(r=>`<tr>
+    <td><a href="https://github.com/${esc(r.owner)}/${esc(r.name)}" target="_blank" style="text-decoration:none">${esc(r.owner)}/<b>${esc(r.name)}</b></a></td>
+    <td><code>${esc(r.branch)}</code></td><td>${esc(r.last_check||'—')}</td><td>${r.n_reviews}</td>
+    <td><span class="chip ${r.active?'on':'off'}">${r.active?'● Sorvegliato':'❚❚ In pausa'}</span>${r.last_error?`<div class="err">${esc(r.last_error)}</div>`:''}</td>
+    <td style="white-space:nowrap;text-align:right">
+      <button class="btn sm" onclick="act(${r.id},'check')">Controlla ora</button>
+      <button class="btn sm" onclick="act(${r.id},'review-latest')">Rivaluta ultimo</button>
+      <button class="btn sm" onclick="act(${r.id},'toggle')">${r.active?'Pausa':'Riprendi'}</button>
+      <button class="btn sm" onclick="act(${r.id},'delete')">Elimina</button></td></tr>`).join('')
+    :'<tr><td colspan="6" class="hint" style="text-align:center;padding:30px">Nessun repository. Giuda si annoia… <i>Meeeeeh…</i></td></tr>';
+}
+async function act(id,a){
+  if(a==='delete'&&!confirm('Eliminare il repository e tutte le sue recensioni?'))return;
+  try{const r=await api(`/api/repos/${id}/${a}`,{}); if(a==='check')toast(r.new?`${r.new} nuovi commit in coda`:'Nessun commit nuovo',3500,r.new?'thinking':'idle');
+    if(a==='review-latest')toast('Ultimo commit messo in coda',3500,'thinking'); refresh();}catch(e){toast(e.message,6000,'rifallo');}
+}
+function welcome(){
+  return `<div class="welcome">${avatar('idle')}<div class="bubble" id="w-b"></div>
+    <h3>${S&&S.repos.length?'Seleziona una recensione':'Dammi un repository da giudicare'}</h3>
+    <div>${S&&S.repos.length?'Oppure aspetta il prossimo push: Giuda è in agguato.':'Vai in <b>Repository</b> e incolla l\'indirizzo GitHub.'}</div></div>`;
+}
+let rowsCache='';
+async function renderReviews(){
+  const q=$('#flt').value; const rows=await api('/api/reviews'+(q?`?repo_id=${q}`:''));
+  const cnt=v=>rows.filter(r=>r.verdict===v).length;
+  $('#s-ti').textContent=cnt('TI ASSOLVO');$('#s-da').textContent=cnt('DA RIVEDERE');$('#s-ri').textContent=cnt('RIFALLO');
+  const html=rows.length?rows.map(r=>`<div class="item v-${(r.verdict||'q').slice(0,2)} ${sel===r.id?'sel':''}" data-id="${r.id}" onclick="openRev(${r.id})">
+     ${badge(r)}<div class="t">${esc(r.message)}</div>
+     <div class="m">${esc(r.owner)}/${esc(r.name)} · <code>${esc(r.sha.slice(0,7))}</code> · ${esc(r.author)} · ${esc(r.created_at)}</div></div>`).join('')
+    :`<div class="welcome" style="min-height:300px"><b style="color:var(--txt)">Ancora nessuna recensione</b><div style="margin-top:6px">Aggiungi un repository e fai un push.</div></div>`;
+  if(html!==rowsCache){$('#list').innerHTML=html;rowsCache=html;}
+  if(!sel&&!$('#detail .welcome')){$('#detail').innerHTML=welcome();typeInto($('#w-b'),rnd(QUIPS));}
+  if(sel){const r=rows.find(x=>x.id===sel); if(r&&['in_coda','in_corso'].includes(r.status)) openRev(sel,true);
+    else if(r&&$('#detail').dataset.status!==r.status) openRev(sel,true);}
+}
+async function openRev(id,silent){
+  sel=id; const r=await api('/api/reviews/'+id);
+  $$('.item').forEach(x=>x.classList.toggle('sel',+x.dataset.id===id));
+  const link=`https://github.com/${r.owner}/${r.name}/commit/${r.sha}`;
+  const v=(r.verdict||'').slice(0,2); let mood, title, intro='', body='';
+  if(r.status==='in_coda'){mood='idle';title='IN CODA';intro='Sto affilando la penna…';}
+  else if(r.status==='in_corso'){mood='thinking';title='STO LEGGENDO…';intro="Un attimo che leggo il diff. Chi l'ha deciso questo nome di file?!";}
+  else if(r.status==='errore'){mood='off';title='ERRORE';body=md(r.content);intro='Non sono riuscito a giudicare questo commit.';}
+  else{mood=moodOf(r.verdict);title=r.verdict==='?'?'VERDETTO ILLEGGIBILE':r.verdict;const s=splitReview(r.content);intro=s.intro;body=md(s.body);}
+  $('#detail').dataset.status=r.status;
+  $('#detail').innerHTML=`<div class="hero v-${v}">${avatar(mood)}
+     <div class="meta"><div class="verdict">${esc(title)}</div>
+       <div class="ctx"><b style="color:var(--txt)">${esc(r.owner)}/${esc(r.name)}</b>
+         <a href="${link}" target="_blank"><code>${esc(r.sha.slice(0,7))}</code> <svg class="i" style="width:12px;height:12px;vertical-align:-1px"><use href="#ic-ext"/></svg></a>
+         · ${esc(r.author)} · ${r.files_count??'?'} file · ${esc(r.model||'—')}</div>
+       <div class="ctx" style="color:var(--txt);opacity:.8">«${esc(r.message)}»</div>
+       ${intro?`<div class="bubble" id="h-b"></div>`:''}</div>
+     <div class="acts"><button class="btn sm" onclick="copyRev()"><svg class="i"><use href="#ic-copy"/></svg>Copia</button>
+       <button class="btn sm" onclick="retry(${r.id})"><svg class="i"><use href="#ic-redo"/></svg>Rifai</button></div></div>
+     <div class="md">${body}</div>`;
+  $('#detail')._raw=r.content||'';
+  if(intro){const b=$('#h-b'); if(silent&&r.status!=='ok')b.innerHTML=inl(intro); else typeInto(b,intro,14);}
+}
+function copyRev(){navigator.clipboard.writeText($('#detail')._raw||'');toast('Copiata. Non farti illusioni.',2500,'idle');}
+async function retry(id){try{await api(`/api/reviews/${id}/retry`,{});toast('Rimessa in coda',3000,'thinking');refresh();}catch(e){toast(e.message,5000,'rifallo');}}
+$('#flt').onchange=()=>{rowsCache='';renderReviews();};
+$('#brand').onclick=()=>{const a=$('#brand .av');a.classList.add('talk');setMood(a,'talk');toast(rnd(QUIPS),3500);setTimeout(()=>{setMood(a,S&&S.status.working_on?'thinking':'idle');},1600);};
+
+/* ---------------- repo ---------------- */
+$('#r-add').onclick=async()=>{
+  const b=$('#r-add'); b.disabled=true;
+  try{const r=await api('/api/repos',{url:$('#r-url').value,branch:$('#r-branch').value,review_now:$('#r-now').checked});
+    toast(`Lo tengo d'occhio (branch ${r.branch})`,4000,'rivedere'); $('#r-url').value='';$('#r-branch').value=''; refresh();}
+  catch(e){toast(e.message,7000,'rifallo');} finally{b.disabled=false;}
+};
+
+/* ---------------- selettore modelli ---------------- */
+let MODELS=[], PROV='';
+const provOf=id=>id.includes('/')?id.split('/')[0]:'';
+function fmtPrice(p){const v=parseFloat(p)*1e6; if(!isFinite(v))return ''; if(v===0)return 'gratis'; return '$'+(v<10?v.toFixed(2):v.toFixed(0));}
+function fmtCtx(c){if(!c)return ''; return c>=1e6?(+(c/1e6).toFixed(1))+'M':Math.round(c/1000)+'k';}
+function meta(m){const x=[]; if(m.ctx)x.push(fmtCtx(m.ctx)+' ctx');
+  if(m.free)x.push('gratis'); else if(m.price_in!=null&&m.price_in!=='') x.push(`${fmtPrice(m.price_in)} / ${fmtPrice(m.price_out)} per M token`);
+  return x.join(' · ');}
+function renderChips(){
+  const counts={}; MODELS.forEach(m=>{const p=provOf(m.id); if(p)counts[p]=(counts[p]||0)+1;});
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,14).map(e=>e[0]).sort();
+  $('#c-chips').innerHTML=top.length?[`<button data-p="" class="${PROV?'':'on'}">Tutti</button>`,
+    ...top.map(p=>`<button data-p="${esc(p)}" class="${PROV===p?'on':''}">${esc(p)} (${counts[p]})</button>`),
+    `<button data-p=":free" class="${PROV===':free'?'on':''}">Solo gratis</button>`].join(''):'';
+  $$('#c-chips button').forEach(b=>b.onclick=()=>{PROV=b.dataset.p;renderChips();renderModels();});
+}
+function renderModels(){
+  const words=$('#c-find').value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const list=MODELS.filter(m=>{
+    if(PROV===':free'&&!m.free)return false;
+    if(PROV&&PROV!==':free'&&provOf(m.id)!==PROV)return false;
+    const s=(m.id+' '+(m.name||'')).toLowerCase(); return words.every(w=>s.includes(w));});
+  const groups={}; list.forEach(m=>{const g=provOf(m.id)||'modelli';(groups[g]=groups[g]||[]).push(m);});
+  const cur=$('#c-model').value;
+  $('#c-list').innerHTML=Object.keys(groups).sort().map(g=>`<optgroup label="${esc(g)} (${groups[g].length})">${
+    groups[g].map(m=>{const mt=meta(m);return `<option value="${esc(m.id)}" ${m.id===cur?'selected':''} title="${esc(m.name||m.id)}">${esc(m.id)}${mt?'   —   '+esc(mt):''}</option>`;}).join('')}</optgroup>`).join('');
+  $('#c-count').textContent=`${list.length} di ${MODELS.length} modelli`;
+}
+function showInfo(id){
+  const m=MODELS.find(x=>x.id===id); if(!m)return;
+  $('#c-info').innerHTML=`Scelto: <b>${esc(m.id)}</b>${m.name?' · '+esc(m.name):''}${meta(m)?' · '+esc(meta(m)):''}. Ora premi <b>Prova Giuda</b>, poi <b>Salva</b>.`;
+}
+function setModels(list,base){
+  MODELS=(list||[]).map(m=>typeof m==='string'?{id:m}:m); PROV='';
+  $('#c-picker').style.display=MODELS.length?'block':'none';
+  $('#c-find').value=''; renderChips(); renderModels();
+  try{localStorage.setItem('giuda_models',JSON.stringify({base,models:MODELS}));}catch(e){}
+}
+$('#c-find').oninput=renderModels;
+$('#c-list').onchange=()=>{const id=$('#c-list').value; if(!id)return; $('#c-model').value=id; showInfo(id);};
+$('#c-model').oninput=()=>{if(MODELS.length)renderModels();};
+
+/* ---------------- impostazioni ---------------- */
+function fillCfg(){
+  const c=S.config;
+  $('#c-preset').value=c.llm_preset||'custom'; $('#c-url').value=c.llm_base_url; $('#c-model').value=c.llm_model;
+  $('#c-key').value=''; $('#c-key').placeholder=c.llm_api_key_set?`salvata (${c.llm_api_key}) — lascia vuoto per non cambiarla`:'';
+  $('#c-gh').value=''; $('#c-gh').placeholder=c.github_token_set?`salvato (${c.github_token}) — lascia vuoto per non cambiarlo`:'github_pat_…';
+  $('#c-temp').value=c.temperature; $('#c-maxtok').value=c.max_tokens; $('#c-maxdiff').value=c.max_diff_chars;
+  $('#c-poll').value=c.poll_seconds; $('#c-maxc').value=c.max_commits_per_check;
+  $('#c-reason').value=c.reasoning_effort||'low'; $('#c-merge').checked=c.skip_merge_commits; $('#c-post').checked=c.post_github_comment;
+  $$('input[name=persona]').forEach(r=>r.checked=r.value===c.persona);
+  try{const cached=JSON.parse(localStorage.getItem('giuda_models')||'null');
+    if(cached&&cached.base===c.llm_base_url&&cached.models&&cached.models.length&&!MODELS.length){setModels(cached.models,cached.base);}}catch(e){}
+}
+function readCfg(){
+  return {llm_preset:$('#c-preset').value,llm_base_url:$('#c-url').value,llm_model:$('#c-model').value.trim(),
+    llm_api_key:$('#c-key').value||'__KEEP__',github_token:$('#c-gh').value||'__KEEP__',
+    temperature:+String($('#c-temp').value).replace(',','.'),max_tokens:+$('#c-maxtok').value,max_diff_chars:+$('#c-maxdiff').value,
+    poll_seconds:+$('#c-poll').value,max_commits_per_check:+$('#c-maxc').value,
+    skip_merge_commits:$('#c-merge').checked,post_github_comment:$('#c-post').checked,
+    reasoning_effort:$('#c-reason').value,persona:($$('input[name=persona]').find(r=>r.checked)||{}).value||'comico'};
+}
+$('#c-preset').onchange=()=>{const p=$('#c-preset').value; if(presets[p])$('#c-url').value=presets[p];
+  MODELS=[]; $('#c-picker').style.display='none';};
+$('#c-load').onclick=async()=>{
+  const b=$('#c-load'); b.disabled=true;
+  try{
+    const k=$('#c-key').value, base=$('#c-url').value.trim();
+    const r=await api(`/api/models?base_url=${encodeURIComponent(base)}${k?'&key='+encodeURIComponent(k):''}`);
+    if(r.error)return toast(r.error,6000,'rifallo');
+    if(!r.models.length)return toast('Nessun modello trovato. Indirizzo o chiave giusti?',5000,'rivedere');
+    setModels(r.models,base);
+    toast(`${r.models.length} modelli. Sceglierne uno decente, mi raccomando.`,4000,'idle');
+    $('#c-find').focus();
+  }catch(e){toast(e.message,6000,'rifallo');} finally{b.disabled=false;}
+};
+$('#c-test').onclick=async()=>{
+  const b=$('#c-test'),o=$('#c-reply'),t=$('#c-reply-txt'),a=o.querySelector('.av'); b.disabled=true; o.style.display='flex';
+  setMood(a,'thinking'); t.textContent='…';
+  try{const r=await api('/api/test-llm',readCfg());
+    if(r.ok){setMood(a,'talk');typeInto(t,r.reply);setTimeout(()=>setMood(a,'idle'),Math.min(8000,r.reply.length*20+400));
+      t.title=`${r.model} · ${r.seconds}s`;}
+    else{setMood(a,'off');t.textContent=r.error;}}
+  catch(e){setMood(a,'off');t.textContent=e.message;} finally{b.disabled=false;}
+};
+$('#c-save').onclick=async()=>{try{await api('/api/config',readCfg());toast('Salvate. Vediamo se reggono.',3000,'idle');await refresh();fillCfg();}catch(e){toast(e.message,5000,'rifallo');}};
+$('#off').onclick=async()=>{if(!confirm('Spegnere Giuda? Smetterà di sorvegliare i repository.'))return;
+  await api('/api/shutdown',{}).catch(()=>{}); document.body.innerHTML=`<div class="welcome" style="min-height:100vh">${avatar('off')}<h3>Giuda dorme.</h3>Per svegliarlo usa l'icona "Giuda" sul desktop.</div>`;};
+
+/* ---------------- avvio ---------------- */
+hydrate();
+(async()=>{try{const r=await api('/api/repertorio');if(r.interfaccia&&r.interfaccia.length)QUIPS.splice(0,QUIPS.length,...r.interfaccia);}catch(e){}
+  await refresh(); if(S){fillCfg();
+  if(!S.config.llm_model) document.querySelector('nav button[data-t=cfg]').click();}
+  if(window.Notification&&Notification.permission==='default') Notification.requestPermission();
+  setInterval(refresh,5000);})();
+</script>
+</body>
+</html>

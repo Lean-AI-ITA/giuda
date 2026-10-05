@@ -173,6 +173,6 @@ Le PR sono benvenute, soprattutto **frasi nuove per il repertorio**. Vedi [`CONT
 
 ## Licenza
 
-[MIT](LICENSE) © 2026 Domenico Vernucci, Lean-AI-ITA
+[MIT](LICENSE) © 2026 Lean-AI-ITA
 
 <div align="center"><br><i>«Un buon amico ti dice la verità. Giuda te la grida.»</i></div>
